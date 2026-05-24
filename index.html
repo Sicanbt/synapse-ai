@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SYNAPSE — Multi-Agent Orchestration Platform</title>
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --bg2: #111118;
+    --bg3: #1a1a24;
+    --accent: #7c3aed;
+    --accent2: #a855f7;
+    --accent3: #c084fc;
+    --text: #f1f0ff;
+    --muted: #8b8aa0;
+    --border: #2a2a3a;
+    --glow: rgba(124,58,237,0.3);
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:var(--bg); color:var(--text); font-family:'Segoe UI',system-ui,sans-serif; overflow-x:hidden; }
+
+  /* NAV */
+  nav { display:flex; justify-content:space-between; align-items:center; padding:1.2rem 4rem; border-bottom:1px solid var(--border); background:rgba(10,10,15,0.9); backdrop-filter:blur(12px); position:sticky; top:0; z-index:100; }
+  .logo { font-size:1.4rem; font-weight:800; letter-spacing:0.15em; background:linear-gradient(135deg,var(--accent2),var(--accent3)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+  .nav-links { display:flex; gap:2rem; list-style:none; }
+  .nav-links a { color:var(--muted); text-decoration:none; font-size:0.9rem; transition:color 0.2s; }
+  .nav-links a:hover { color:var(--text); }
+  .nav-cta { background:var(--accent); color:#fff; padding:0.55rem 1.4rem; border-radius:8px; text-decoration:none; font-size:0.9rem; font-weight:600; transition:background 0.2s,box-shadow 0.2s; }
+  .nav-cta:hover { background:var(--accent2); box-shadow:0 0 20px var(--glow); }
+
+  /* HERO */
+  .hero { min-height:90vh; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:4rem 2rem; position:relative; overflow:hidden; }
+  .hero::before { content:''; position:absolute; width:700px; height:700px; background:radial-gradient(circle,rgba(124,58,237,0.15) 0%,transparent 70%); top:50%; left:50%; transform:translate(-50%,-50%); pointer-events:none; }
+  .badge { display:inline-flex; align-items:center; gap:0.5rem; background:rgba(124,58,237,0.15); border:1px solid rgba(124,58,237,0.4); border-radius:999px; padding:0.35rem 1rem; font-size:0.8rem; color:var(--accent3); margin-bottom:1.5rem; }
+  .badge span { width:6px; height:6px; background:var(--accent3); border-radius:50%; animation:pulse 2s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:0.3;} }
+  h1 { font-size:clamp(2.5rem,6vw,5rem); font-weight:900; line-height:1.1; letter-spacing:-0.02em; margin-bottom:1.5rem; }
+  h1 span { background:linear-gradient(135deg,var(--accent2),var(--accent3),#e879f9); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+  .hero-sub { font-size:1.15rem; color:var(--muted); max-width:600px; line-height:1.7; margin-bottom:2.5rem; }
+  .hero-btns { display:flex; gap:1rem; flex-wrap:wrap; justify-content:center; }
+  .btn-primary { background:linear-gradient(135deg,var(--accent),var(--accent2)); color:#fff; padding:0.8rem 2rem; border-radius:10px; text-decoration:none; font-weight:700; font-size:1rem; transition:transform 0.2s,box-shadow 0.2s; }
+  .btn-primary:hover { transform:translateY(-2px); box-shadow:0 8px 30px var(--glow); }
+  .btn-secondary { background:transparent; color:var(--text); padding:0.8rem 2rem; border-radius:10px; text-decoration:none; font-weight:600; font-size:1rem; border:1px solid var(--border); transition:border-color 0.2s,background 0.2s; }
+  .btn-secondary:hover { border-color:var(--accent2); background:rgba(124,58,237,0.08); }
+
+  /* STATS */
+  .stats { display:flex; justify-content:center; gap:3rem; padding:2.5rem 4rem; border-top:1px solid var(--border); border-bottom:1px solid var(--border); flex-wrap:wrap; }
+  .stat { text-align:center; }
+  .stat-num { font-size:2rem; font-weight:800; background:linear-gradient(135deg,var(--accent2),var(--accent3)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+  .stat-label { font-size:0.8rem; color:var(--muted); margin-top:0.2rem; }
+
+  /* SECTION */
+  section { padding:5rem 4rem; max-width:1200px; margin:0 auto; }
+  .section-label { font-size:0.75rem; letter-spacing:0.2em; text-transform:uppercase; color:var(--accent3); margin-bottom:0.8rem; }
+  .section-title { font-size:clamp(1.8rem,3vw,2.8rem); font-weight:800; margin-bottom:1rem; }
+  .section-sub { color:var(--muted); font-size:1rem; line-height:1.7; max-width:560px; margin-bottom:3rem; }
+
+  /* AGENTS */
+  .agents-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:1.5rem; }
+  .agent-card { background:var(--bg2); border:1px solid var(--border); border-radius:16px; padding:2rem; transition:border-color 0.3s,transform 0.3s,box-shadow 0.3s; position:relative; overflow:hidden; }
+  .agent-card::before { content:''; position:absolute; inset:0; background:linear-gradient(135deg,rgba(124,58,237,0.05),transparent); opacity:0; transition:opacity 0.3s; }
+  .agent-card:hover { border-color:var(--accent2); transform:translateY(-4px); box-shadow:0 12px 40px rgba(124,58,237,0.15); }
+  .agent-card:hover::before { opacity:1; }
+  .agent-icon { width:48px; height:48px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:1.4rem; margin-bottom:1.2rem; }
+  .agent-card h3 { font-size:1.1rem; font-weight:700; margin-bottom:0.5rem; }
+  .agent-card p { font-size:0.88rem; color:var(--muted); line-height:1.6; }
+  .agent-tag { display:inline-block; margin-top:1rem; font-size:0.72rem; padding:0.25rem 0.7rem; border-radius:999px; font-weight:600; }
+
+  /* FEATURES */
+  .features-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:1.5rem; }
+  .feature-card { background:var(--bg2); border:1px solid var(--border); border-radius:16px; padding:1.8rem; }
+  .feature-card h3 { font-size:1rem; font-weight:700; margin-bottom:0.5rem; display:flex; align-items:center; gap:0.6rem; }
+  .feature-card p { font-size:0.88rem; color:var(--muted); line-height:1.6; }
+
+  /* MIMO */
+  .mimo-section { background:var(--bg2); border:1px solid var(--border); border-radius:24px; padding:3rem; display:flex; align-items:center; gap:3rem; flex-wrap:wrap; margin:0 4rem 5rem; }
+  .mimo-badge { background:linear-gradient(135deg,var(--accent),var(--accent2)); border-radius:16px; padding:1.5rem 2rem; text-align:center; min-width:160px; }
+  .mimo-badge .version { font-size:2rem; font-weight:900; color:#fff; }
+  .mimo-badge .label { font-size:0.75rem; color:rgba(255,255,255,0.7); margin-top:0.2rem; }
+  .mimo-content h2 { font-size:1.8rem; font-weight:800; margin-bottom:0.8rem; }
+  .mimo-content p { color:var(--muted); line-height:1.7; max-width:500px; }
+
+  /* FOOTER */
+  footer { border-top:1px solid var(--border); padding:2.5rem 4rem; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem; }
+  .footer-logo { font-size:1.1rem; font-weight:800; letter-spacing:0.15em; background:linear-gradient(135deg,var(--accent2),var(--accent3)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+  footer p { color:var(--muted); font-size:0.85rem; }
+
+  @media(max-width:768px) {
+    nav { padding:1rem 1.5rem; }
+    .nav-links { display:none; }
+    section { padding:3rem 1.5rem; }
+    .stats { gap:1.5rem; padding:2rem 1.5rem; }
+    .mimo-section { margin:0 1.5rem 3rem; padding:2rem; }
+    footer { padding:2rem 1.5rem; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">SYNAPSE</div>
+  <ul class="nav-links">
+    <li><a href="#agents">Agents</a></li>
+    <li><a href="#features">Features</a></li>
+    <li><a href="#technology">Technology</a></li>
+    <li><a href="#docs">Docs</a></li>
+  </ul>
+  <a href="#get-started" class="nav-cta">Get Started</a>
+</nav>
+
+<div class="hero">
+  <div class="badge"><span></span> Powered by MiMo V2.5</div>
+  <h1>Orchestrate Intelligence<br>with <span>SYNAPSE</span></h1>
+  <p class="hero-sub">A next-generation multi-agent orchestration platform where specialized AI agents collaborate seamlessly to solve complex, real-world problems at scale.</p>
+  <div class="hero-btns">
+    <a href="#get-started" class="btn-primary">Start Orchestrating</a>
+    <a href="#agents" class="btn-secondary">Meet the Agents</a>
+  </div>
+</div>
+
+<div class="stats">
+  <div class="stat"><div class="stat-num">4</div><div class="stat-label">Specialized Agents</div></div>
+  <div class="stat"><div class="stat-num">99.9%</div><div class="stat-label">Uptime SLA</div></div>
+  <div class="stat"><div class="stat-num">&lt;50ms</div><div class="stat-label">Agent Handoff Latency</div></div>
+  <div class="stat"><div class="stat-num">∞</div><div class="stat-label">Scalable Pipelines</div></div>
+</div>
+
+<section id="agents">
+  <div class="section-label">Agent Network</div>
+  <h2 class="section-title">Four Agents. One Unified Mind.</h2>
+  <p class="section-sub">Each SYNAPSE agent is purpose-built for its role, communicating through a shared orchestration layer to deliver coherent, high-quality outcomes.</p>
+  <div class="agents-grid">
+    <div class="agent-card">
+      <div class="agent-icon" style="background:rgba(59,130,246,0.15);">🔍</div>
+      <h3>Analyst Agent</h3>
+      <p>Ingests raw data, identifies patterns, and surfaces actionable insights. The intelligence backbone of every SYNAPSE pipeline.</p>
+      <span class="agent-tag" style="background:rgba(59,130,246,0.15);color:#60a5fa;">Data Intelligence</span>
+    </div>
+    <div class="agent-card">
+      <div class="agent-icon" style="background:rgba(124,58,237,0.15);">🧭</div>
+      <h3>Strategist Agent</h3>
+      <p>Translates analysis into structured plans. Weighs trade-offs, sets priorities, and defines the execution roadmap.</p>
+      <span class="agent-tag" style="background:rgba(124,58,237,0.15);color:#a78bfa;">Strategic Planning</span>
+    </div>
+    <div class="agent-card">
+      <div class="agent-icon" style="background:rgba(16,185,129,0.15);">⚡</div>
+      <h3>Executor Agent</h3>
+      <p>Carries out tasks with precision — API calls, code generation, data transformations, and automated workflows.</p>
+      <span class="agent-tag" style="background:rgba(16,185,129,0.15);color:#34d399;">Task Execution</span>
+    </div>
+    <div class="agent-card">
+      <div class="agent-icon" style="background:rgba(245,158,11,0.15);">📡</div>
+      <h3>Monitor Agent</h3>
+      <p>Watches every step in real time. Detects anomalies, triggers alerts, and ensures pipeline health end-to-end.</p>
+      <span class="agent-tag" style="background:rgba(245,158,11,0.15);color:#fbbf24;">Observability</span>
+    </div>
+  </div>
+</section>
+
+<section id="features">
+  <div class="section-label">Platform Features</div>
+  <h2 class="section-title">Built for Production Scale</h2>
+  <p class="section-sub">SYNAPSE is engineered for teams that need reliable, auditable, and extensible multi-agent workflows.</p>
+  <div class="features-grid">
+    <div class="feature-card"><h3>🔗 Dynamic Orchestration</h3><p>Agents are assigned tasks dynamically based on context, load, and capability — no hardcoded pipelines.</p></div>
+    <div class="feature-card"><h3>🧠 Shared Memory Layer</h3><p>All agents read and write to a unified context store, ensuring coherent reasoning across the entire workflow.</p></div>
+    <div class="feature-card"><h3>🔒 Role-Based Access</h3><p>Fine-grained permissions per agent. Audit every decision with full traceability and compliance logging.</p></div>
+    <div class="feature-card"><h3>📊 Real-Time Dashboard</h3><p>Visualize agent activity, task queues, and pipeline health in a live, interactive control panel.</p></div>
+    <div class="feature-card"><h3>🔌 API-First Design</h3><p>REST and WebSocket APIs let you integrate SYNAPSE into any existing stack with minimal friction.</p></div>
+    <div class="feature-card"><h3>⚙️ Custom Agent SDK</h3><p>Extend the platform with your own agents using the SYNAPSE SDK — plug in, configure, and deploy.</p></div>
+  </div>
+</section>
+
+<div class="mimo-section" id="technology">
+  <div class="mimo-badge">
+    <div class="version">MiMo</div>
+    <div class="label">V2.5 Engine</div>
+  </div>
+  <div class="mimo-content">
+    <h2>Powered by MiMo V2.5</h2>
+    <p>SYNAPSE runs on MiMo V2.5, a state-of-the-art reasoning model optimized for multi-step agentic tasks. MiMo V2.5 delivers superior chain-of-thought reasoning, tool use, and inter-agent communication — giving every SYNAPSE agent the cognitive power to handle complex, ambiguous real-world challenges.</p>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-logo">SYNAPSE</div>
+  <p>© 2026 Synapse AI. Multi-Agent Orchestration Platform.</p>
+  <p style="color:var(--accent3);font-size:0.8rem;">Powered by MiMo V2.5</p>
+</footer>
+
+</body>
+</html>
